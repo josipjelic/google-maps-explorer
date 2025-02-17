@@ -39,6 +39,7 @@ const error = ref<string | null>(null)
 const currentBounds = ref<google.maps.LatLngBounds | null>(null)
 const filteredIds = ref<{ apartments: string[], places: string[] } | null>(null)
 const mapMounted = ref(false)
+const shouldRecenter = ref(false)
 
 const visibleApartments = computed(() => {
   let filtered = apartments.value
@@ -117,6 +118,11 @@ function handleBoundsChanged(bounds: google.maps.LatLngBounds) {
 
 function handleSearch(results: { apartments: string[], places: string[] }) {
   filteredIds.value = results
+  shouldRecenter.value = true
+  // Reset shouldRecenter after a short delay
+  setTimeout(() => {
+    shouldRecenter.value = false
+  }, 100)
 }
 
 onMounted(async () => {
@@ -160,6 +166,7 @@ onMounted(async () => {
                         :apartments="visibleApartments"
                         :places="visiblePlaces"
                         :selected-id="selectedId"
+                        :should-recenter="shouldRecenter"
                         @select="handleSelect"
                         @bounds-changed="handleBoundsChanged"
                       />

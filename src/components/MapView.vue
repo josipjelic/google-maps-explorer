@@ -29,6 +29,7 @@ const props = defineProps<{
   apartments: Apartment[]
   places: Place[]
   selectedId?: string
+  shouldRecenter?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -333,7 +334,26 @@ function handleMarkerClick(item: Apartment | Place, type: 'apartment' | 'place')
   }
 }
 
+// Function to recenter map based on visible markers
+function recenterMap() {
+  if (!map.value || markers.value.length === 0) return
+
+  const bounds = new google.maps.LatLngBounds()
+  markers.value.forEach(marker => {
+    bounds.extend(marker.getPosition()!)
+  })
+
+  map.value.fitBounds(bounds)
+  
+  // If we're too zoomed in (happens with single marker), zoom out a bit
+  const zoom = map.value.getZoom()
+  if (zoom && zoom > 15) {
+    map.value.setZoom(15)
+  }
+}
+
 watch(() => props.apartments, updateMarkers, { deep: true })
+
 watch(() => props.places, async (newPlaces) => {
   if (newPlaces.length > 0) {
     await initializePlaceTypes()
@@ -357,6 +377,13 @@ watch(() => props.selectedId, (newId) => {
       selectedType.value = 'title' in item ? 'apartment' : 'place'
       showInfoPane.value = true
     }
+  }
+})
+
+// Watch for shouldRecenter prop to trigger map recentering
+watch(() => props.shouldRecenter, (shouldRecenter) => {
+  if (shouldRecenter) {
+    recenterMap()
   }
 })
 

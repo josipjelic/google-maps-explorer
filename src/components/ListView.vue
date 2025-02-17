@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type { Apartment } from '../types/apartment'
 import type { Place } from '../types/place'
 import SearchBar from './SearchBar.vue'
@@ -34,8 +34,15 @@ const items = computed(() => [
   }))
 ])
 
+const shouldRecenter = ref(false)
+
 function handleSearch(results: { apartments: string[], places: string[] }) {
   emit('search', results)
+  shouldRecenter.value = true
+  // Reset shouldRecenter after a short delay
+  setTimeout(() => {
+    shouldRecenter.value = false
+  }, 100)
 }
 </script>
 
@@ -149,7 +156,7 @@ function handleSearch(results: { apartments: string[], places: string[] }) {
 .item-content h3 {
   margin: 0;
   color: #333;
-  font-size: 1rem;
+  font-size: .7rem;
 }
 
 .item-content p {
