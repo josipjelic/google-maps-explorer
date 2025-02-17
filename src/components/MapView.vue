@@ -21,6 +21,10 @@ interface PlaceTypeResponse {
   }
 }
 
+const selectedItem = ref<Apartment | Place | null>(null)
+const selectedType = ref<'apartment' | 'place' | null>(null)
+const showInfoPane = ref(false)
+
 const props = defineProps<{
   apartments: Apartment[]
   places: Place[]
@@ -38,9 +42,6 @@ const markerClusterer = ref<MarkerClusterer | null>(null)
 const markers = ref<google.maps.Marker[]>([])
 const googleMaps = ref<typeof google.maps | null>(null)
 const placeTypeCache = ref(new Map<number, 'bar' | 'restaurant'>())
-const selectedItem = ref<Apartment | Place | null>(null)
-const selectedType = ref<'apartment' | 'place' | null>(null)
-const showInfoPane = ref(false)
 
 // Create marker icons with improved visibility
 function createMarkerIcon(type: 'bar' | 'restaurant' | 'apartment') {
@@ -308,10 +309,16 @@ async function updateMarkers() {
 }
 
 function handleMarkerClick(item: Apartment | Place, type: 'apartment' | 'place') {
+  console.log('Marker clicked:', { item, type })
   // First update the state
   selectedItem.value = item
   selectedType.value = type
   showInfoPane.value = true
+  console.log('State updated:', { 
+    selectedItem: selectedItem.value, 
+    selectedType: selectedType.value, 
+    showInfoPane: showInfoPane.value 
+  })
 
   // Then emit the event
   emit('select', item.id.toString())
@@ -361,7 +368,8 @@ function handleCloseInfoPane() {
 </script>
 
 <template>
-  <div ref="mapContainer" class="map-container">
+  <div class="map-wrapper">
+    <div ref="mapContainer" class="map-container" />
     <Transition name="fade">
       <InfoPane
         v-if="showInfoPane && selectedItem && selectedType"
@@ -374,10 +382,19 @@ function handleCloseInfoPane() {
 </template>
 
 <style scoped>
-.map-container {
+.map-wrapper {
   width: 100%;
   height: 100%;
   position: relative;
+}
+
+.map-container {
+  width: 100%;
+  height: 100%;
+}
+
+:deep(.gm-style) {
+  z-index: 1;
 }
 
 .fade-enter-active,
