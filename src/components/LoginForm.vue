@@ -28,7 +28,7 @@ const handleExplore = () => {
 onMounted(() => {
   if (mapContainer.value) {
     const loader = new Loader({
-      apiKey: 'AIzaSyCG_Xjps2qa_WQaDMXPiGQI-awnxocepKw',
+      apiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY,
       version: 'weekly'
     })
 
