@@ -28,7 +28,7 @@ onMounted(() => {
     <div class="apartments-container">
       <div class="header">
         <h1>Available Apartments</h1>
-        <router-link to="/apartments/new" class="add-button">
+        <router-link to="/admin/apartments/new" class="add-button">
           Add New Apartment
         </router-link>
       </div>
